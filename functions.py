@@ -73,31 +73,31 @@ def spike_response(t):
         return 0
 
 def closest_t(t, spike):#nearest to the left of t single spike
-    с=1
-    for i in spike:
-        if t-i>0:
-            c=i
-        else:
+    с = 1
+    for i in spike :
+        if t - i > 0 :
+            c = i
+        else :
             break
     return c
 
 def neuron_state(t, spikes, vect_of_w):#how to consider tR????
-    S=0
-    k=0
-    tf=1
-    for spike in spikes:
+    S = 0
+    k = 0
+    tf = 1
+    for spike in spikes :
         spike_sum = 0
         tf_loc = closest_t(t, spike)
         for i in spike:
-             spike_sum += spike_response(t-i)
-        S = S + spike_sum *vect_of_w[k]
-        k+=1
-        if tf==1:
-            tf=tf_loc
-        elif (tf<tf_loc)&(tf_loc<t):
+             spike_sum += spike_response(t - i)
+        S = S + spike_sum * vect_of_w[k]
+        k += 1
+        if tf == 1 :
+            tf = tf_loc
+        elif (tf < tf_loc) & (tf_loc < t) :
             tf = tf_loc
 
-    return eta_refract(t-tf)+S
+    return eta_refract(t - tf) + S
 
 
 #just check if i am screwed up
