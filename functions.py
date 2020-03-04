@@ -111,7 +111,7 @@ spike=[]
 spike1, m = gen_spike()
 spike2, n = gen_spike()
 d_spike, k = gen_spike()
-spike_s =spike_sum (spike1, spike2)
+spikes =[for i in spikes gen_spike()] 
 
 print("spike1", spike1)
 print ("spike1 length", m)
