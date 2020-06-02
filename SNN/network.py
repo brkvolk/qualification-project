@@ -22,6 +22,7 @@ class NeuralNetwork:
         self.output             = []             #реальный выход
         self.error: float       = 100.
         self.post_hiden_spikes  = []
+        self.ny                 = ny
 
     def feedforward(self):
         self.post_hiden_spikes = []
@@ -34,9 +35,8 @@ class NeuralNetwork:
 
 
     def ERROR(self):
-        self.error= 0.5*(spikeIP(self. output, self. output) - 2*(spikeIP(self. output, self.target)) + spikeIP(self.target, self.target))
-       # return self.Error
-
+        self.error = 0.5*(spikeIP(self. output, self. output) - 2*(spikeIP(self. output, self.target)) + spikeIP(self.target, self.target))
+       #return (self.error)
 
     def backprop(self):
         d_weights1 = np.zeros((I, H), dtype=float)
@@ -44,12 +44,15 @@ class NeuralNetwork:
 
         h = 0
         while h < H:
-            d_weights2[h] = -ny*(spikeIP(self.output, self.post_hiden_spikes[h]) - spikeIP(self.target, self.post_hiden_spikes[h]))  #вектор
+            d_weights2[h] = -self.ny*(spikeIP(self.output, self.post_hiden_spikes[h]) - spikeIP(self.target, self.post_hiden_spikes[h]))  #вектор
             i = 0
             while i < I:
-                d_weights1[i][h] = -ny*(spikeIP(self.output, self.input[i]) - spikeIP(self.target, self.input[i])) * self.weights2[h] #матрица
+                d_weights1[i][h] = -self.ny*(spikeIP(self.output, self.input[i]) - spikeIP(self.target, self.input[i])) * self.weights2[h] #матрица
                 i += 1
             h += 1
 
         self.weights1 += d_weights1
         self.weights2 += d_weights2
+
+    def change_ny(self):
+        self.ny = 0.85 * self.ny

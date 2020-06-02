@@ -1,6 +1,6 @@
 ##################################################################################
 #
-# Functions for spikes generating
+# Functions for spikes generating with frequency la
 #
 #################################################################################
 
@@ -18,8 +18,8 @@ def gen_spike_with_length(): #генерируем спайки пуассоно
         t = t + E / la
         spike.append(t)
 
-    #return np.array(spike), k
     return spike, k
+
 def gen_spike(): #генерируем спайки пуассоновским процессом
     spike = []
     t = 0
@@ -30,5 +30,4 @@ def gen_spike(): #генерируем спайки пуассоновским �
         t = t + E / la
         spike.append(t)
 
-    #return np.array(spike)
     return spike
