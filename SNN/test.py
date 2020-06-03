@@ -28,13 +28,13 @@ neuron2 = neuron()
 neuron2.potential(input_spikes, weights)
 
 print("output:", neuron2.output)
-print("potential:" , neuron2.data)
+print("potential:", neuron2.data)
 
 
 
 if neuron2.output: #если есть выход
 
-    x1 = np.linspace(0, T, N)
+    x1 = np.linspace(0, T, 1000)
     y1 = neuron2.data
 
     plt.plot(x1, y1, c="black")
