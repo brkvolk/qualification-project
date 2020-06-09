@@ -6,7 +6,7 @@
 
 import numpy as np
 from SNN.inner_products import spikeIP, timeIP
-from SNN.network_parameters import I, H, ny
+from SNN.network_parameters import I, H, ny, L
 from SNN.SRM_neuoron import neuron
 
 class NeuralNetwork:
@@ -63,5 +63,19 @@ class NeuralNetwork:
         self.weights1 += d_weights1
         self.weights2 += d_weights2
 
-    def change_ny(self):
-        self.ny = 0.8 * self.ny
+    def quantization(self):
+        w1max = np.amax(abs(self.weights1), axis=1)
+        w2max = np.amax(abs(self.weights2))
+        if L>=2:
+            d1 = w1max/(L-1)
+            d2 = w2max/(L-1)
+        else:
+            print("wrong L")
+            return
+        for i in range(I):
+            for j in range(H):
+                for k in range(1, L):
+                    if ((k - 1) * d1[i] < self.weights1[i][j]) & (self.weights1[i][j] < k * d1[i]):
+                        self.weights1 = d1[i] * (k - 1) * np.sign(self.weights1)
+                    if ((k - 1) * d2 < self.weights2[j]) & (self.weights2[j] < k * d2):
+                        self.weights2 = d2 * (k - 1) * np.sign(self.weights2)
