@@ -1,47 +1,27 @@
-#############################################
-#
-# testing
-#
-#####################################################
-
 import numpy as np
-from SNN.network_parameters import T, I, H, delta_t, T, P_threshold, N
+import cv2
+from numpy import interp
+from SNN.network_parameters import T, la
 from SNN.spike_gen import gen_spike
-from SNN.SRM_neuoron import neuron
-import matplotlib
 import matplotlib.pyplot as plt
-matplotlib.rcParams['font.size'] = 8.0
+from SNN.weight_initialization import weight_init
+import pandas as pd
 
+path = "C:\\Users\\ALEX\\PycharmProjects\\3-neuron_network\\SNN\\iris\\"
+max_epoch = 100
+setosa_error, versicolor_error, virginica_error = np.load(path+'setosa_error.npy'), np.load(path+'versicolor_error.npy'), np.load(path+'virginica_error.npy')
+np.array(setosa_error).tolist()
+np.array(versicolor_error).tolist()
+np.array(virginica_error).tolist()
 
+x = [i for i in range(max_epoch)]
 
-spike1 = gen_spike()
-spike2 = gen_spike()
+y1 = [setosa_error[i] for i in x]
+y2 = [versicolor_error[i] for i in x]
+y3 = [virginica_error[i] for i in x]
 
-input_spikes =[]
-for i in range(H):
-   input_spikes.append(gen_spike())
+plt.plot(x, y1, color='blue')
+plt.plot(x, y2, color='red')
+plt.plot(x, y3, color='green')
 
-target = gen_spike()
-weights = np.random.uniform(0, 0.2, H)
-
-neuron2 = neuron()
-neuron2.potential(input_spikes, weights)
-
-print("output:", neuron2.output)
-print("potential:", neuron2.data)
-
-
-
-if neuron2.output: #если есть выход
-
-    x1 = np.linspace(0, T, 1000)
-    y1 = neuron2.data
-
-    plt.plot(x1, y1, c="black")
-    x2 = neuron2.output
-    y2 = [P_threshold for i in x2]
-    y3 = [P_threshold for i in x1]
-
-    plt.scatter(x2, y2, c='orange')
-    plt.plot(x1, y3, c="blue")
-    plt.show()
+plt.show()
