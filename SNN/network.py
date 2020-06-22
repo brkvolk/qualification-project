@@ -27,46 +27,40 @@ class NeuralNetwork:
         for h in range(H):
             self.hiden_layer[h].potential(self.input, self.weights1[:, h])      #список списков  - выходов со скрытых нейронов
             self.post_hiden_spikes.append(self.hiden_layer[h].output)
-            # print(self.post_hiden_spikes)
 
         self.output_layer.potential(self.post_hiden_spikes, self.weights2 )  #т.к. выходной нейрон один, то цикла нет
-        # print(self.post_hiden_spikes)
         self.output = self.output_layer.output
 
     def ERROR(self):
-        self.error = 0.5*(spikeIP(self. output, self. output) - 2*(spikeIP(self. output, self.target)) + spikeIP(self.target, self.target))
+        self.error = 0.5 * (spikeIP(self.output, self.output) - 2 * (spikeIP(self.output, self.target)) + spikeIP(self.target, self.target))
 
     def backprop(self):
         d_weights1 = np.zeros((I, H), dtype=float)
         d_weights2 = np.zeros(H, dtype=float)
 
-        # print(self.post_hiden_spikes)
-
         h = 0
         while h < H:
             # print(self.output)
 
-            d_weights2[h] = -self.ny*0.1*(spikeIP(self.output, self.post_hiden_spikes[h]) - spikeIP(self.target, self.post_hiden_spikes[h]))  #вектор
-            # print( self.post_hiden_spikes[h])
-            # print(spikeIP(self.target, self.post_hiden_spikes[h]))
+            d_weights2[h] = -self.ny * (spikeIP(self.output, self.post_hiden_spikes[h]) - spikeIP(self.target, self.post_hiden_spikes[h]))  #вектор
+
             i = 0
             while i < I:
-                d_weights1[i][h] = -self.ny*0.1*(spikeIP(self.output, self.input[i]) - spikeIP(self.target, self.input[i])) * self.weights2[h] #матрица
-                # print(spikeIP(self.output, self.input[i]), spikeIP(self.target, self.input[i]))
+                d_weights1[i][h] = -self.ny * (spikeIP(self.output, self.input[i]) - spikeIP(self.target, self.input[i])) * self.weights2[h] #матрица
+
                 i += 1
             h += 1
 
-        # print(self.weights1, "\n")
-        # print(d_weights1, "\n++++++++++++++++++++")
-        # print(self.weights2, "\n")
-        # print(d_weights2)
+        print(self.weights1,"\n", d_weights1, "\n" )
+        print(self.weights2, "\n", d_weights2, "\n")
+
         self.weights1 += d_weights1
         self.weights2 += d_weights2
 
     def quantization(self):
         w1max = np.amax(abs(self.weights1), axis=1)
         w2max = np.amax(abs(self.weights2))
-        if L>=2:
+        if L >= 2:
             d1 = w1max/(L-1)
             d2 = w2max/(L-1)
         else:

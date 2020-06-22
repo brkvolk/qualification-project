@@ -14,6 +14,8 @@ import matplotlib.pyplot as plt
 
 def Error(output,target):
     return(0.5 * (spikeIP(output, output) - 2 * (spikeIP(output, target)) + spikeIP(target,target)))
+
+
 #
 path = "C:\\Users\\ALEX\\PycharmProjects\\3-neuron_network\\SNN\\iris\\"
 
@@ -45,9 +47,11 @@ path = "C:\\Users\\ALEX\\PycharmProjects\\3-neuron_network\\SNN\\iris\\"
 # learn = learn.sample(frac=1).reset_index(drop=True)#перемешиваем строки
 # learn.to_csv(path + "learn.csv")
 data = pd.read_csv(path + "iris_csv.csv")
+# learn = pd.read_csv(path + "please\\new.csv")
 learn = pd.read_csv(path + "learn.csv")
-learn.index = np.arange(len(learn))
-# learn = learn.sample(frac=1).reset_index(drop=True)#перемешиваем строки
+# learn = pd.read_csv(path + "iris_csv.csv")
+# learn.index = np.arange(len(learn))
+learn = learn.sample(frac=1).reset_index(drop=True)#перемешиваем строки
 # print(learn)
 sepallength = [min(data['sepallength']), max(data['sepallength'])]
 sepalwidth = [min(data['sepalwidth']), max(data['sepalwidth'])]
@@ -56,7 +60,7 @@ petalwidth = [min(data['petalwidth']), max(data['petalwidth'])]
 
 # кодируем в спайки
 # freq_range = [30, 45]
-freq_range = [10, 15]
+freq_range = [9, 16]
 learning_data_row = []
 # testing_data_row = []
 
@@ -106,97 +110,106 @@ for i in range(75):
 # np.save(path+'virginica_target.npy', np.array(virginica_target))
 
 # обучение
-Wih, Who = np.load(path+'weights\\Wih1.npy'), np.load(path+'weights\\Who1.npy')
+# Wih, Who = np.load(path+'please\\Wih_buff.npy'), np.load(path+'please\\Who_buff.npy')
+Wih, Who = np.load(path+'please\\Wih.npy'), np.load(path+'please\\Who.npy')
+# Wih, Who = np.load(path+'please\\Wih12.npy'), np.load(path+'please\\Who12.npy')
 # Wih, Who = weight_init()
-# np.save(path+'weights\\Wih0.npy', Wih)
-# np.save(path+'weights\\Who0.npy', Who)
+# np.save(path+'please\\Wih0.npy', Wih)
+# np.save(path+'please\\Who0.npy', Who)
 
+# print(Wih, Who)
 epoch = 0
-max_epoch = 100
+max_epoch = 20
 
 NeuralNetwork = NeuralNetwork([], [], Wih, Who)
+# NeuralNetwork.quantization()
 k = np.zeros(max_epoch)
 
 setosa_error = np.zeros(max_epoch)
 versicolor_error = np.zeros(max_epoch)
 virginica_error = np.zeros(max_epoch)
 
-while epoch < max_epoch:
-       for i in range(75):
-            NeuralNetwork.input = learning_data_row[i]
-            NeuralNetwork.feedforward()
 
+while epoch < max_epoch:
+
+    for i in range(75):
+
+            NeuralNetwork.input = learning_data_row[i]
+            NeuralNetwork.target = targets[i]
+
+            NeuralNetwork.feedforward()
+            NeuralNetwork.ERROR()
+
+
+
+
+        # Error[epoch] += NeuralNetwork.error
             E = min(Error(NeuralNetwork.output, setosa_target), Error(NeuralNetwork.output, versicolor_target), Error(NeuralNetwork.output, virginica_target))
 
-            NeuralNetwork.target = targets[i]
-            NeuralNetwork.ERROR()
-        # Error[epoch] += NeuralNetwork.error
+            # print(Error(NeuralNetwork.output, setosa_target))
+            # print(Error(NeuralNetwork.output, versicolor_target))
+            # print(Error(NeuralNetwork.output, virginica_target))
+            # print("E = ", E)
+            # print("network error", NeuralNetwork.error )
 
-            if (NeuralNetwork.error == E) & (len(NeuralNetwork.output)!= 0 ):
+            if (NeuralNetwork.error == E) & (len(NeuralNetwork.output) != 0):
+
                 k[epoch] += 1
-                if learn.loc[i]['class'] =='Iris-setosa': setosa_error[i]+=1
-                elif learn.loc[i]['class'] == 'Iris-versicolor': versicolor_error[i]+=1
-                elif learn.loc[i]['class'] == 'Iris-virginica': virginica_error[i]+=1
+
+                if learn.loc[i]['class'] =='Iris-setosa': setosa_error[epoch] += 1
+                elif learn.loc[i]['class'] == 'Iris-versicolor': versicolor_error[epoch] += 1
+                elif learn.loc[i]['class'] == 'Iris-virginica': virginica_error[epoch] += 1
+            # elif (NeuralNetwork.error != E) & (len(NeuralNetwork.output) != 0):
 
             NeuralNetwork.backprop()
-        # print(NeuralNetwork.weights2)
-        # Wih, Who = NeuralNetwork.weights1, NeuralNetwork.weights2
-        # print(Wih,"\n")
-        # print(Who,"\n+++++++++++++++++++++")
             print(i)
             print("output = ", NeuralNetwork.output, "\nlen:", len(NeuralNetwork.output))
             print("target =", NeuralNetwork.target, "\nlen:", len(NeuralNetwork.target))
             print('ERROR:', NeuralNetwork.error)
             print("epoch:", epoch, "\n correctly classified:", k[epoch])
             print("=================================================================================================================================================================")
-       epoch +=1
-    # x3 = [i for i in range(epoch)]
+
+    epoch +=1
+
+    print(k)
+
+print (setosa_error)
+print (versicolor_error)
+print (virginica_error)
+
+
+
+x = [i for i in range(epoch)]
     # y3 = [Error[i] for i in x3]
     # plt.plot(x3, y3)
     # plt.show()
-    # NeuralNetwork.quantization()
+y1 = [25-setosa_error[i] for i in x]
+y2 = [25-versicolor_error[i] for i in x]
+y3 = [25-virginica_error[i] for i in x]
+y4 = (setosa_error+virginica_error+versicolor_error)/0.75
+
+plt.plot(x, y1, color='blue')
+plt.plot(x, y2, color='red')
+plt.plot(x, y3, color='green')
+plt.show()
+
+# plt.plot(x, y4, color='black')
+# plt.show()
 
 
-np.save(path+'weights\\Wih2.npy', NeuralNetwork.weights1)
-np.save(path+'weights\\Who2.npy', NeuralNetwork.weights2)
-np.save(path+'setosa_error.npy', np.array(setosa_error))
-np.save(path+'versicolor_error.npy', np.array(versicolor_error))
-np.save(path+'virginica_error.npy', np.array(virginica_error))
+
+np.save(path+'please\\Wih.npy', NeuralNetwork.weights1)
+np.save(path+'please\\Who.npy', NeuralNetwork.weights2)
+np.save(path+'please\\setosa_error.npy', np.array(setosa_error))
+np.save(path+'please\\versicolor_error.npy', np.array(versicolor_error))
+np.save(path+'please\\virginica_error.npy', np.array(virginica_error))
 
 print("learning complited")
 print(k)
-x3 = [i for i in range(max_epoch)]
-y3 = [k[i] for i in x3]
-plt.plot(x3, y3)
-plt.show()
-
-#классификация
-# Wih, Who = np.load(path+'Wih2.npy'), np.load(path+'Who2.npy')
-# # print(Wih)
-#
-# setosa_error = []
-# versicolor_error = []
-# virginica_error = []
-#
-# NeuralNetwork1 = NeuralNetwork([], [], Wih, Who)
-#
-# for i in range(75):
-#     NeuralNetwork1.input = testing_data_row[i]
-#     NeuralNetwork1.feedforward()
-#     if test.loc[i]['class'] == 'Iris-setosa':
-#         setosa_error.append(NeuralNetwork1.error)
-#     elif test.loc[i]['class'] == 'Iris-versicolor':
-#         versicolor_error.append(NeuralNetwork1.error)
-#     elif test.loc[i]['class'] == 'Iris-virginica':
-#         virginica_error.append(NeuralNetwork1.error)
-# np.save(path+'setosa_error_test.npy', np.array(setosa_error))
-# np.save(path+'versicolor_error_test.npy', np.array(versicolor_error))
-# np.save(path+'virginica_error_test.npy', np.array(virginica_error))
-#
-# print(setosa_error)
-# print(versicolor_error)
-# print(virginica_error)
-
+# x3 = [i for i in range(max_epoch)]
+# y3 = [k[i] for i in x3]
+# plt.plot(x3, y3)
+# plt.show()
 
 
 

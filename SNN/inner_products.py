@@ -6,9 +6,9 @@ def timeIP(tm , tn):#скалярное произведение моменто�
     return math.exp( - (abs(tm - tn) ** 2) / (2 * (sigma ** 2) ) )
 
 def spikeIP(spike1, spike2):#скалярное произведение спайков
-   S = 0
-   for tm in spike1:
-       for tn in spike2:
-           S += timeIP(tm, tn)
+    S = 0
+    for tm in spike1:
+        for tn in spike2:
+            S += timeIP(tm, tn)
    #print(S)
-   return S
+    return S

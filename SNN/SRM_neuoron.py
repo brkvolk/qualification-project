@@ -37,20 +37,6 @@ class neuron:
 			for spike in current_spikes:          #идем по входным спайкам
 				spike_sum = 0             #и суммируем вклад от каждого в момент времени t
 
-				# for t_firing in spike:                                                          #проверяем выпустился ли новый спайк
-				# 	if (t_firing <= t) & (t_firing > t_firing_last[k]) & (t >= t_ref):			#и нужно ли его учитывать
-				# 		t_firing_last[k] = t_firing
-
-				# if spike:
-				# 	if (spike[0] <= t):
-				# 		buff_t = spike.pop(0)
-				# 		if (t >= t_ref):
-				# 			t_firing_last[k] = buff_t
-				# 		buff_spikes.append(spike)
-				# 	else:
-				# 		buff_spikes.append(spike)
-				# else:
-				# 	buff_spikes.append(spike)
 				if spike:
 					if (spike[0] <= t):
 						buff_t = spike.pop(0)

@@ -6,12 +6,15 @@
 
 
 import numpy as np
-from SNN.network_parameters import I, H, ny
+from SNN.network_parameters import I, H, O, ny
 
 
 def weight_init():
-    Wih = np.random.uniform(0, 0.2, (I, H)) #матрицы весов
-    Who = np.random.uniform(0, 0.2, H)
+    Wih = np.random.uniform(0, 0.3, (I, H)) #матрицы весов
+    if O == 1:
+        Who = np.random.uniform(0., 0.2, H)
+    else:
+        Who = np.random.uniform(0, 0.2, (H, O))
     return Wih, Who
 
 #правила для весов
